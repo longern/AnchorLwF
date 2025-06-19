@@ -1,9 +1,9 @@
-# SR-DCM
+# ReDuMix
 
 ## 3 Method
 
-We propose **Self-Reflective Dual-Context Mixture Decoding (SR-DCM)**, an inference-time procedure that augments a pretrained language model with textual feedback and self-reflection while retaining the model’s original reasoning distribution.  
-Unlike prior work that discards model’s prior reasoning or relies solely on reinforcement learning, SR-DCM preserves both the original thinking and post-hoc critique through token-level mixture decoding. It proceeds in four sequential stages.
+We propose **Self-Reflective Dual-Context Mixture Decoding (ReDuMix)**, an inference-time procedure that augments a pretrained language model with textual feedback and self-reflection while retaining the model’s original reasoning distribution.  
+Unlike prior work that discards model’s prior reasoning or relies solely on reinforcement learning, ReDuMix preserves both the original thinking and post-hoc critique through token-level mixture decoding. It proceeds in four sequential stages.
 
 ---
 
@@ -79,7 +79,7 @@ Equation (1) has two desirable properties:
 #### 3.4.3 Algorithm 1 (Pseudo-Code)
 
 ```
-Algorithm 1  SR-DCM decoding (hyper-parameter λ)
+Algorithm 1  ReDuMix decoding (hyper-parameter λ)
 Input: prompt x, feedback r, model fθ
 1: y(1) ← fθ.generate(x, show_CoT=True)          ▹ Stage 1
 2: c   ← fθ.generate([x || y(1) || r || REFLECT]) ▹ Stage 3
@@ -106,11 +106,11 @@ Input: prompt x, feedback r, model fθ
 
 ### 3.6 Optional Fine-Tuning via DPO
 
-While SR-DCM is inference-compatible out of the box, its reflective outputs can be used to further improve model alignment via offline preference learning. Specifically, we collect pairs of <original output, reflective redo> for each task, and apply **Direct Preference Optimization (DPO)** to fine-tune the base model.  
+While ReDuMix is inference-compatible out of the box, its reflective outputs can be used to further improve model alignment via offline preference learning. Specifically, we collect pairs of <original output, reflective redo> for each task, and apply **Direct Preference Optimization (DPO)** to fine-tune the base model.  
 
 Let $x$ be the task prompt, $y_{\text{orig}}$ the original answer, and $y_{\text{redo}}$ the revised answer after self-reflection. We assume the latter is preferred and train the model using the DPO objective:
 
 $$L_{DPO}(θ) = −log σ[β (log P_θ(y_{redo} | x) − log P_θ(y_{orig} | x))]$$
 
-where $β > 0$ controls preference sharpness. This enables long-term benefit from SR-DCM without the need to collect external preference annotations or reward models.
+where $β > 0$ controls preference sharpness. This enables long-term benefit from ReDuMix without the need to collect external preference annotations or reward models.
 
