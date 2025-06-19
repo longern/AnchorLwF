@@ -11,21 +11,17 @@ Unlike prior work that discards model’s prior reasoning or relies solely on re
 
 Given a task prompt **x**, we invoke the base LLM once, requesting it to output its chain-of-thought followed by a final answer  
 
-```
-y^{(1)} = f_{\theta}(x)
-```
+$$y^{(1)} = f_{\theta}(x)$$
 
 The hidden activations (KV-cache) produced during this forward pass are retained; they define a conditional token distribution  
 
-```
-P_1(t | x, y_{<t}^{(1)}; θ)
-```
+$$ P_1(t | x, y_{\lt t}^{(1)}; θ) $$
 
 ---
 
 ### 3.2 Stage 2 – Human or Environment Feedback
 
-After inspecting \(y^{(1)}\), a human annotator (or an automated runtime monitor) writes free-form textual feedback **r**, commenting on strengths, errors, or overlooked constraints. The feedback is *not* structured or scored — only raw text is required.
+After inspecting $y^{(1)}$, a human annotator (or an automated runtime monitor) writes free-form textual feedback **r**, commenting on strengths, errors, or overlooked constraints. The feedback is *not* structured or scored — only raw text is required.
 
 ---
 
@@ -37,11 +33,9 @@ We concatenate the original prompt, the model’s entire chain-of-thought, its p
 x^{(ref)} = [x || y^{(1)} || r || "Please reflect on the above and outline corrections before answering again."]
 ```
 
-and reuse the same model \(f_{\theta}\) to generate an unconstrained reflection **c**:
+and reuse the same model $f_{\theta}$ to generate an unconstrained reflection **c**:
 
-```
-c = f_{\theta}(x^{(ref)})
-```
+$$c = f_{\theta}(x^{(ref)})$$
 
 The reflection must: (i) explicitly cite the earlier reasoning steps, (ii) identify concrete mistakes, and (iii) propose a revised plan.
 
@@ -59,26 +53,22 @@ x^{(2)} = [x || y^{(1)} || r || c || "Now redo the task following your reflectio
 
 During final decoding we maintain two independent contexts:
 
-- **Context 1:** \(x\) (the original prompt)  
-- **Context 2:** \(x^{(2)}\) (the original prompt + thoughts + feedback + reflection + redo prompt)
+- **Context 1:** $x$ (the original prompt)  
+- **Context 2:** $x^{(2)}$ (the original prompt + thoughts + feedback + reflection + redo prompt)
 
 Both contexts are extended with the *identical* sequence of output tokens as they are generated. At each time step *t* we obtain two token distributions by forwarding the same model twice (in parallel or sequentially reusing KV-cache):
 
-```
-P_1(· | h_t^{(1)}), P_2(· | h_t^{(2)})
-```
+$$P_1(· | h_t^{(1)}), P_2(· | h_t^{(2)})$$
 
-where \(h_t^{(k)}\) is the hidden state of context *k* after emitting the first \(t−1\) tokens.
+where $h_t^{(k)}$ is the hidden state of context *k* after emitting the first $t−1$ tokens.
 
 #### 3.4.2 Per-Token Log-Probability Averaging
 
 We fuse the two distributions by computing a weighted log-probability average
 
-```
-log P_mix(w) = λ·log P_1(w) + (1−λ)·log P_2(w)
-```
+$$\log P_{mix}(w) = λ·\log P_1(w) + (1−λ)·\log P_2(w)$$
 
-and sample token \(w_t\) from \(P_{mix}\) using any standard decoding rule (e.g., nucleus sampling with temperature τ). The chosen token is then appended to *both* contexts before the next step.
+and sample token $w_t$ from $P_{mix}$ using any standard decoding rule (e.g., nucleus sampling with temperature τ). The chosen token is then appended to *both* contexts before the next step.
 
 Equation (1) has two desirable properties:
 
@@ -109,8 +99,8 @@ Input: prompt x, feedback r, model fθ
 ### 3.5 Complexity and Implementation Notes
 
 - **Computational cost**: Step 4 doubles forward passes per token, but remains embarrassingly parallel. On modern GPUs the latency overhead is ≈1.7× when KV-cache reuse is exploited.  
-- **Context length**: If \(x^{(2)}\) risks exceeding the model window, we optionally compress the earliest portion of \(y^{(1)}\) via summarisation before Stage 3.  
-- **Hyper-parameter λ**: We set λ = 0.5 by default.  
+- **Context length**: If $x^{(2)}$ risks exceeding the model window, we optionally compress the earliest portion of $y^{(1)}$ via summarisation before Stage 3.  
+- **Hyper-parameter λ**: We set $λ = 0.5$ by default.  
 
 ---
 
@@ -118,11 +108,9 @@ Input: prompt x, feedback r, model fθ
 
 While SR-DCM is inference-compatible out of the box, its reflective outputs can be used to further improve model alignment via offline preference learning. Specifically, we collect pairs of <original output, reflective redo> for each task, and apply **Direct Preference Optimization (DPO)** to fine-tune the base model.  
 
-Let \(x\) be the task prompt, \(y_{\text{orig}}\) the original answer, and \(y_{\text{redo}}\) the revised answer after self-reflection. We assume the latter is preferred and train the model using the DPO objective:
+Let $x$ be the task prompt, $y_{\text{orig}}$ the original answer, and $y_{\text{redo}}$ the revised answer after self-reflection. We assume the latter is preferred and train the model using the DPO objective:
 
-```
-L_{DPO}(θ) = −log σ[β (log P_θ(y_{redo} | x) − log P_θ(y_{orig} | x))]
-```
+$$L_{DPO}(θ) = −log σ[β (log P_θ(y_{redo} | x) − log P_θ(y_{orig} | x))]$$
 
-where β > 0 controls preference sharpness. This enables long-term benefit from SR-DCM without the need to collect external preference annotations or reward models.
+where $β > 0$ controls preference sharpness. This enables long-term benefit from SR-DCM without the need to collect external preference annotations or reward models.
 
