@@ -1,8 +1,12 @@
 # ReDuMix
 
+## Abstract
+
+Contemporary large language models are predominantly optimised via Supervised Fine‑Tuning (SFT) and Reinforcement Learning from Human Feedback (RLHF).  These regimes, however, overlook the supervision signal embedded in a model’s own post‑hoc self‑reflection.  We introduce Reflective Dual‑Context Mixture Decoding (ReDuMix), an inference‑time framework that (i) improves generation quality by fusing the model’s native and reflective token distributions, and (ii) systematically harvests high‑quality reflection–revision pairs that serve as preference data for further training.  ReDuMix first elicits the model’s chain‑of‑thought, then incorporates free‑form human (or environment) feedback, and finally fuses the original and reflective contexts through per‑token log‑probability averaging.
+
 ## 3 Method
 
-We propose **Self-Reflective Dual-Context Mixture Decoding (ReDuMix)**, an inference-time procedure that augments a pretrained language model with textual feedback and self-reflection while retaining the model’s original reasoning distribution.  
+We propose **Reflective Dual-Context Mixture Decoding (ReDuMix)**, an inference-time procedure that augments a pretrained language model with textual feedback and self-reflection while retaining the model’s original reasoning distribution.  
 Unlike prior work that discards model’s prior reasoning or relies solely on reinforcement learning, ReDuMix preserves both the original thinking and post-hoc critique through token-level mixture decoding. It proceeds in four sequential stages.
 
 ---
