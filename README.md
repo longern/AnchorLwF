@@ -118,3 +118,8 @@ $$L_{DPO}(θ) = −log σ[β (log P_θ(y_{redo} | x) − log P_θ(y_{orig} | x))
 
 where $β > 0$ controls preference sharpness. This enables long-term benefit from ReDuMix without the need to collect external preference annotations or reward models.
 
+## 5 Discussions
+
+**Why fuse rather than replace? — Implications for downstream fine-tuning** ReDuMix deliberately retains the baseline reasoning trajectory during decoding instead of switching wholesale to the reflection-driven chain of thought. This design decision is crucial once the generated <original, redo> pairs are recycled for preference-based fine-tuning. Purely adopting the reflection path would inject large amounts of feedback-specific tokens—often rare jargon or unseen facts—into the training corpus. From the model’s current parameterisation these tokens lie in a low-probability region; naively treating them as the sole target distribution produces a large, unbounded KL divergence from the original logits, yielding unstable gradients and pronounced overfitting.
+
+By contrast, the per-token log-probability interpolation guarantees that every supervising target remains a convex combination of two distributions the model already understands. The resulting redo answers thus stay close to the native manifold, acting as a “self-supervised residual” rather than a hard domain jump. In short, dual-context mixture decoding is not merely a generation-time trick: it is a principled regulariser that preserves training stability while still harvesting the corrective signal embodied in human (or automated) feedback.
