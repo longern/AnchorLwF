@@ -25,7 +25,7 @@ $$ P_1(t | x, y_{\lt t}^{(1)}; θ) $$
 
 ### 3.2 Stage 2 – Human or Environment Feedback
 
-After inspecting $y^{(1)}$, a human annotator (or an automated runtime monitor) writes free-form textual feedback **r**, commenting on strengths, errors, or overlooked constraints. The feedback is *not* structured or scored — only raw text is required.
+After inspecting $y^{(1)}$, free-form textual feedback **r** is provided by a human annotator, an automated runtime monitor, or the task’s ground truth, commenting on strengths, errors, or overlooked constraints.
 
 ---
 
