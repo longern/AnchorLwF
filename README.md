@@ -112,7 +112,11 @@ Input: prompt x, feedback r, model fθ
 
 While ReDuMix is inference-compatible out of the box, its reflective outputs can be used to further improve model alignment via offline generative training. Specifically, we collect pairs of <original output, reflective redo> for each task, and apply Generative Knowledge Distillation (GKD) to fine-tune the base model.
 
-Let $x$ be the task prompt, $y_{\text{orig}}$ the original answer, and $y_{\text{redo}}$ the revised answer after self-reflection. We treat the redo as a higher-quality target and distill the updated knowledge by minimizing the KL diversity.
+We train the model $P_θ$ to match $P_{\text{mix}}$ by minimizing the KL divergence at each decoding step.
+
+$$
+L_{\text{GKD}}(\theta) = \sum_{t=1}^T \mathrm{KL}\left[P_{\text{mix}}(\cdot \mid x, w_{\lt t}) \Vert P_\theta(\cdot \mid x, w_{\lt t}) \right]
+$$
 
 In practice, we implement this by minimizing the expected token-level cross-entropy under the mixture distribution:
 
