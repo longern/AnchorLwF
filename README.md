@@ -108,15 +108,15 @@ Input: prompt x, feedback r, model fθ
 
 ---
 
-### 3.6 Optional Fine-Tuning via DPO
+### 3.6 Optional Fine-Tuning via GKD
 
-While ReDuMix is inference-compatible out of the box, its reflective outputs can be used to further improve model alignment via offline preference learning. Specifically, we collect pairs of <original output, reflective redo> for each task, and apply **Direct Preference Optimization (DPO)** to fine-tune the base model.  
+While ReDuMix is inference-compatible out of the box, its reflective outputs can be used to further improve model alignment via offline generative training. Specifically, we collect pairs of <original output, reflective redo> for each task, and apply Generative Knowledge Distillation (GKD) to fine-tune the base model.
 
-Let $x$ be the task prompt, $y_{\text{orig}}$ the original answer, and $y_{\text{redo}}$ the revised answer after self-reflection. We assume the latter is preferred and train the model using the DPO objective:
+Let $x$ be the task prompt, $y_{\text{orig}}$ the original answer, and $y_{\text{redo}}$ the revised answer after self-reflection. We treat the redo as a higher-quality target and distill the updated knowledge by minimizing the negative log-likelihood:
 
-$$L_{DPO}(θ) = −log σ[β (log P_θ(y_{redo} | x) − log P_θ(y_{orig} | x))]$$
+$$L_{GKD}(θ) = – log P_θ(y_redo | x)$$
 
-where $β > 0$ controls preference sharpness. This enables long-term benefit from ReDuMix without the need to collect external preference annotations or reward models.
+In this setup, the model is trained to imitate its own improved reasoning, effectively turning ReDuMix into a form of self-improving supervision. Unlike preference-based objectives, GKD treats the reflective redo as a soft teacher output rather than a hard preference between alternatives, leading to more stable gradients and compatibility with standard autoregressive training pipelines.
 
 ## 5 Discussions
 
