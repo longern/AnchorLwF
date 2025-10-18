@@ -38,13 +38,22 @@ We propose a hybrid loss function that combines two distinct components:
 
 - **KL Divergence Loss:** Applied to the remaining tokens, where the goal is to maintain the output distribution similar to that of the reference model. This ensures that the model does not deviate significantly from previously learned knowledge while focusing on the selected tokens.
 
+$$
+\mathcal{L}(x) = 
+\begin{cases} 
+-\sum_{t \in \mathcal{T}_{\text{annotated}}} p_{\text{true}}(x_t) \log p_{\theta}(x_t) & \text{if } t \in \mathcal{T}_{\text{annotated}} \\
+D_{\text{KL}}\left( p_{\theta}(x_t) \parallel p_{\text{ref}}(x_t) \right) & \text{if } t \notin \mathcal{T}_{\text{annotated}} 
+\end{cases}
+$$
+
+
 ### 3.2 Token Selection Process
 
-The token selection process is a manual process initially (called xxx), where annotators interact with the model's output. The process follows these steps:
+The token selection process is a manual process initially (called anchors), where annotators interact with the model's output. The process follows these steps:
 
 1. The annotator views the original input and output.
 2. They select the first incorrect token in the output.
-3. The annotator then provides the correct token for that position, which is used as ground truth for that token. Add this token to the xxx set.
+3. The annotator then provides the correct token for that position, which is used as ground truth for that token. Add this token to the anchors set.
 4. Subsequent tokens are generated in a greedy manner based on the updated token.
 5. This process repeats until the entire sequence is correct.
 
