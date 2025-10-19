@@ -1,4 +1,4 @@
-# Token-Level Learning without Forgetting: Fine-tuning LLM with Minimal Data Yet Preventing Catastrophic Forgetting
+# ​​Token-Level Learning without Forgetting for Large Language Models​
 
 ## Abstract
 
@@ -39,13 +39,10 @@ We propose a hybrid loss function that combines two distinct components:
 - **KL Divergence Loss:** Applied to the remaining tokens, where the goal is to maintain the output distribution similar to that of the reference model. This ensures that the model does not deviate significantly from previously learned knowledge while focusing on the selected tokens.
 
 $$
-\mathcal{L}(x) = 
-\begin{cases} 
--\sum_{t \in \mathcal{T}_{\text{annotated}}} p_{\text{true}}(x_t) \log p_{\theta}(x_t) & \text{if } t \in \mathcal{T}_{\text{annotated}} \\
-D_{\text{KL}}\left( p_{\theta}(x_t) \parallel p_{\text{ref}}(x_t) \right) & \text{if } t \notin \mathcal{T}_{\text{annotated}} 
-\end{cases}
+\mathcal{L}(x) = D_{\text{KL}}\left( p_{\theta}(x_t) \parallel c_t \cdot \delta(x_t) + (1 - c_t) \cdot p_{\text{ref}}(x_t) \right)
 $$
 
+where $c_t\in[0,1]$ is the annotation confidence weight: $c_t=0$ for non-anchor tokens, and $0<c_t\le 1$ for anchor tokens. Typically $c_t=1$ indicates full confidence in the annotated token. When $c_t<1$, it reflects the annotator's uncertainty, allowing alternative tokens to be considered correct.
 
 ### 3.2 Token Selection Process
 
