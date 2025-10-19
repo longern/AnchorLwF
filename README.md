@@ -30,21 +30,7 @@ Reinforcement learning (RL) has been used for fine-tuning models in environments
 
 ## 3. Methodology
 
-### 3.1 Hybrid Loss Function
-
-We propose a hybrid loss function that combines two distinct components:
-
-- **Cross-Entropy Loss:** Applied to a small, carefully selected set of tokens. These tokens represent critical parts of the input that need to be memorized. Annotators select the first incorrect token and mark the correct one, guiding the model to correct this specific error.
-
-- **KL Divergence Loss:** Applied to the remaining tokens, where the goal is to maintain the output distribution similar to that of the reference model. This ensures that the model does not deviate significantly from previously learned knowledge while focusing on the selected tokens.
-
-$$
-\mathcal{L}(x) = D_{\text{KL}}\left( p_{\theta}(x_t) \parallel c_t \cdot \delta(x_t) + (1 - c_t) \cdot p_{\text{ref}}(x_t) \right)
-$$
-
-where $c_t\in[0,1]$ is the annotation confidence weight: $c_t=0$ for non-anchor tokens, and $0<c_t\le 1$ for anchor tokens. Typically $c_t=1$ indicates full confidence in the annotated token. When $c_t<1$, it reflects the annotator's uncertainty, allowing alternative tokens to be considered correct.
-
-### 3.2 Token Selection Process
+### 3.1 Token Selection Process
 
 The token selection process is a manual process initially (called anchors), where annotators interact with the model's output. The process follows these steps:
 
@@ -53,6 +39,20 @@ The token selection process is a manual process initially (called anchors), wher
 3. The annotator then provides the correct token for that position, which is used as ground truth for that token. Add this token to the anchors set.
 4. Subsequent tokens are generated in a greedy manner based on the updated token.
 5. This process repeats until the entire sequence is correct.
+
+### 3.2 Hybrid Loss Function
+
+We propose a hybrid loss function that combines two distinct components:
+
+- **Cross-Entropy Loss:** Applied to the anchors. These tokens represent critical parts of the input that need to be memorized. Annotators select the first incorrect token and mark the correct one, guiding the model to correct this specific error.
+
+- **KL Divergence Loss:** Applied to the remaining tokens, where the goal is to maintain the output distribution similar to that of the reference model. This ensures that the model does not deviate significantly from previously learned knowledge while focusing on the selected tokens.
+
+$$
+\mathcal{L}(x) = D_{\text{KL}}\left( p_{\theta}(x_t) \parallel c_t \cdot \delta(x_t) + (1 - c_t) \cdot p_{\text{ref}}(x_t) \right)
+$$
+
+where $c_t\in[0,1]$ is the annotation confidence weight: $c_t=0$ for non-anchor tokens, and $0<c_t\le 1$ for anchor tokens. Typically $c_t=1$ indicates full confidence in the annotated token. When $c_t<1$, it reflects the annotator's uncertainty, allowing alternative tokens to be considered correct.
 
 ### 3.3 Reference Model
 
