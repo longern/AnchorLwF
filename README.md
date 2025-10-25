@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Fine-tuning Large Language Models (LLMs) is challenging due to the need for extensive annotated data and the risk of catastrophic forgetting. In this paper, we propose a novel fine-tuning method for large language models (LLMs) that combines token-level cross-entropy loss with token-level knowledge distillation via KL divergence. This approach allows for efficient memory retention with minimal annotated data, inspired by the "Learning without Forgetting" (LwF) paradigm, but applied at the token level. We demonstrate that only a few, carefully chosen token needs to be annotated, significantly reducing annotation costs while maintaining high performance. Experimental results show that our approach outperforms traditional methods like Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) in terms of memory retention for specific content.
+Fine-tuning Large Language Models (LLMs) is challenging due to the need for extensive annotated data and the risk of catastrophic forgetting. In this paper, we propose a novel fine-tuning method for large language models (LLMs) that combines token-level cross-entropy loss with token-level knowledge distillation via KL divergence. This approach allows for efficient memory retention with minimal annotated data, inspired by the "Learning without Forgetting" (LwF) paradigm, but applied at the token level. We demonstrate that only a few, carefully chosen tokens need to be annotated, significantly reducing annotation costs while maintaining high performance. Experimental results show that our approach outperforms traditional methods like Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) in terms of memory retention for specific content.
 
 ## 1. Introduction
 
@@ -32,7 +32,7 @@ Reinforcement learning (RL) has been used for fine-tuning models in environments
 
 ### 3.1 Token Selection Process
 
-The token selection process is a manual process initially (called anchors), where annotators interact with the model's output. The process follows these steps:
+The token selection process is a manual process initially (called "anchors"), where annotators interact with the model's output. The process follows these steps:
 
 1. The annotator views the original input and output.
 2. They select the first incorrect token in the output.
