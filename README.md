@@ -56,7 +56,7 @@ where $c_t\in[0,1]$ is the annotation confidence weight: $c_t=0$ for non-anchor 
 
 ### 3.3 Reference Model
 
-The reference model must be the same model being fine-tuned. It can be any auto-regressive language model that is used as the "teacher" during the knowledge distillation phase, guiding the model's outputs via KL divergence.
+The reference model should be the original pre-trained model or a fixed copy of the checkpoint. When employing Low-Rank Adaptation for fine-tuning, the frozen base model without the LoRA adapters—which is essentially the original pre-trained model—can serve as the reference model.
 
 ## 4. Experiments
 
